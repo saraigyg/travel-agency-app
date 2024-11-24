@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Booking - Travel Agency</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="{% static 'tours/style.css' %}">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light shadow-sm">
+        <div class="container">
+            <a class="navbar-brand" href="{% url 'home' %}">Budapest Travel</a>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item"><a class="nav-link" href="{% url 'home' %}">Home</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Booking Section -->
+    <div id="booking" class="content-section bg-light">
+        <div class="container">
+            <h2>Book Your Package</h2>
+            <form id="booking-form" method="POST" action="{% url 'book_tour_submit' %}">
+                {% csrf_token %}
+                <!-- First Name and Last Name side by side -->
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="firstName" class="form-label">First Name</label>
+                        <input type="text" class="form-control" id="firstName" name="firstName" placeholder="Your First Name" required>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="lastName" class="form-label">Last Name</label>
+                        <input type="text" class="form-control" id="lastName" name="lastName" placeholder="Your Last Name" required>
+                    </div>
+                </div>
+
+                <!-- Phone Number and Email side by side -->
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="phone" class="form-label">Phone Number</label>
+                        <input type="tel" class="form-control" id="phone" name="phone" placeholder="Your Phone Number" pattern="[0-9]*" required>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="email" class="form-label">Email</label>
+                        <input type="email" class="form-control" id="email" name="email" placeholder="Your Email" required>
+                    </div>
+                </div>
+
+                <!-- Select Package (with price data) -->
+                <div class="mb-3">
+                    <label for="tour" class="form-label">Select Tour</label>
+                    <select class="form-select" id="tour" name="tour" required>
+                        <option value="" data-price="0">Choose a tour...</option>
+                        {% for tour in tours %}
+                        <option value="{{ tour.id }}" data-price="{{ tour.price|floatformat:2 }}">
+                        {{ tour.title }} - ${{ tour.price|floatformat:2 }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <!-- Display Tour Price -->
+                <div class="mb-3">
+                    <label for="tourPrice" class="form-label">Tour Price</label>
+                    <input type="text" class="form-control" id="tourPrice" name="tourPrice" value="$0.00" readonly>
+                </div>
+
+                <script>
+                // JavaScript to update the tour price when a tour is selected
+                document.getElementById('tour').addEventListener('change', function () {
+                let selectedOption = this.options[this.selectedIndex];
+                let tourPrice = selectedOption.getAttribute('data-price');
+                document.getElementById('tourPrice').value = tourPrice ? '$' + tourPrice : '$0.00';
+                });
+                </script>
+                
+                <!-- Number of People -->
+                <div class="mb-3">
+                    <label for="num_people" class="form-label">Number of People</label>
+                    <input type="number" class="form-control" id="num_people" name="num_people" placeholder="Number of People" min="1" required>
+                </div>
+
+                <!-- Start Date and End Date side by side -->
+                <div class="mb-3">
+                    <label for="startDate" class="form-label">Start Date</label>
+                    <input type="date" class="form-control" id="startDate" name="startDate" required>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label for="endDate" class="form-label">End Date</label>
+                    <input type="date" class="form-control" id="endDate" name="endDate" required>
+                </div>
+
+                <!-- Special Requests -->
+                <div class="mb-3">
+                    <label for="specialRequests" class="form-label">Special Requests</label>
+                    <textarea class="form-control" id="specialRequests" name="specialRequests" rows="4" placeholder="Any special requests..."></textarea>
+                </div>
+
+                <!-- Submit Button -->
+                <button type="submit" class="btn btn-primary">Submit Booking</button>
+            </form>
+        </div>
+    </div>
+
+    <footer>
+        <div class="footer-container">
+            <p>&copy; 2024 Budapest Travel. All Rights Reserved.</p>
+        </div>
+    </footer>
+</body>
+</html>
+

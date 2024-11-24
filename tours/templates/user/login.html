@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Login and Registration</title>
+    <!-- Bootstrap CSS -->
+    {% load static %}
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background-image: url('images/background.jpg'); /* Replace with your background image */
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-position: center;
+            font-family: 'Roboto', sans-serif;
+        }
+
+        .form-container {
+            max-width: 400px;
+            margin: auto;
+            padding: 30px;
+            background: rgba(255, 255, 255, 0.9); /* White with some transparency */
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+        }
+
+        h2 {
+            margin-bottom: 20px;
+            text-align: center;
+            color: #007bff; /* Bootstrap primary color */
+        }
+
+        .alert {
+            display: none; /* Hide alerts by default */
+            margin-bottom: 20px;
+        }
+
+        .button-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 20px; /* Add margin to separate from input fields */
+        }
+
+        .toggle-link {
+            text-align: center;
+            color: #007bff; /* Bootstrap primary color */
+            text-decoration: underline;
+        }
+
+            .toggle-link:hover {
+                color: #0056b3; /* Darker shade for hover effect */
+            }
+
+        input[type="email"],
+        input[type="password"],
+        input[type="text"],
+        input[type="tel"] {
+            padding-left: 40px; /* Space for icons */
+        }
+
+        .input-group {
+            position: relative;
+        }
+
+            .input-group i {
+                position: absolute;
+                left: 10px;
+                top: 12px;
+                color: #aaa; /* Light color for icons */
+            }
+
+        button {
+            transition: background-color 0.3s, transform 0.3s;
+        }
+
+            button:hover {
+                background-color: #0056b3; /* Darker shade for hover effect */
+                transform: scale(1.05);
+            }
+
+        /* Responsive design */
+        @media (max-width: 576px) {
+            .form-container {
+                width: 90%;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navbar Section -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light shadow-sm">
+        <div class="container">
+            <a class="navbar-brand logo-title" href="#">
+                <img src="{% static 'tours/images/Logo.png' %}" alt="Logo" width="40" class="d-inline-block align-text-top">Budapest Travel
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" href="{% url 'home' %}">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#packages">Packages</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#destinations">Destinations</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#gallery">Gallery</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="#customer-registration">Login</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-5">
+        <div class="form-container" id="login-form">
+            <h2>Login</h2>
+            <div class="alert alert-danger" id="login-error">Invalid email or password!</div>
+            <form onsubmit="return loginUser(event)">
+                <div class="mb-3 input-group">
+                    <i class="bi bi-person"></i> <!-- Add icon -->
+                    <label for="login-email" class="form-label visually-hidden">Email</label>
+                    <input type="email" class="form-control" id="login-email" placeholder="Email" required>
+                </div>
+                <div class="mb-3 input-group">
+                    <i class="bi bi-lock"></i> <!-- Add icon -->
+                    <label for="login-password" class="form-label visually-hidden">Password</label>
+                    <input type="password" class="form-control" id="login-password" placeholder="Password" required>
+                </div>
+                <div class="button-container">
+                    <button type="submit" class="btn btn-primary">Login</button>
+                    <a href="#" class="toggle-link" onclick="toggleForms()">Create an account</a>
+                </div>
+            </form>
+        </div>
+
+        <div class="form-container" id="register-form" style="display:none;">
+            <h2>Register</h2>
+            <div class="alert alert-danger" id="register-error">Registration failed!</div>
+            <form onsubmit="return registerUser(event)">
+                <div class="mb-3 input-group">
+                    <i class="bi bi-person"></i> <!-- Add icon -->
+                    <label for="first-name" class="form-label visually-hidden">First Name</label>
+                    <input type="text" class="form-control" id="first-name" placeholder="First Name" required>
+                </div>
+                <div class="mb-3 input-group">
+                    <i class="bi bi-person"></i> <!-- Add icon -->
+                    <label for="last-name" class="form-label visually-hidden">Last Name</label>
+                    <input type="text" class="form-control" id="last-name" placeholder="Last Name" required>
+                </div>
+                <div class="mb-3 input-group">
+                    <i class="bi bi-envelope"></i> <!-- Add icon -->
+                    <label for="register-email" class="form-label visually-hidden">Email</label>
+                    <input type="email" class="form-control" id="register-email" placeholder="Email" required>
+                </div>
+                <div class="mb-3 input-group">
+                    <i class="bi bi-lock"></i> <!-- Add icon -->
+                    <label for="register-password" class="form-label visually-hidden">Password</label>
+                    <input type="password" class="form-control" id="register-password" placeholder="Password" required>
+                </div>
+                <div class="mb-3 input-group">
+                    <i class="bi bi-lock"></i> <!-- Add icon -->
+                    <label for="confirm-password" class="form-label visually-hidden">Confirm Password</label>
+                    <input type="password" class="form-control" id="confirm-password" placeholder="Confirm Password" required>
+                </div>
+                <div class="mb-3 input-group">
+                    <i class="bi bi-telephone"></i> <!-- Add icon -->
+                    <label for="phone" class="form-label visually-hidden">Phone Number</label>
+                    <input type="tel" class="form-control" id="phone" placeholder="Phone Number" required>
+                </div>
+                <div class="button-container">
+                    <button type="submit" class="btn btn-success">Register</button>
+                    <a href="#" class="toggle-link" onclick="toggleForms()">Already have an account? Login</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS and Icons -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css"></script>
+    <script>
+        // Simple mock login and registration logic
+        function toggleForms() {
+            const loginForm = document.getElementById('login-form');
+            const registerForm = document.getElementById('register-form');
+            if (loginForm.style.display === 'none') {
+                loginForm.style.display = 'block';
+                registerForm.style.display = 'none';
+            } else {
+                loginForm.style.display = 'none';
+                registerForm.style.display = 'block';
+            }
+        }
+
+        function loginUser(event) {
+            event.preventDefault();
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+
+            // Mock validation
+            if (email === "test@example.com" && password === "password123") {
+                alert("Login successful!");
+            } else {
+                document.getElementById('login-error').style.display = 'block';
+            }
+        }
+
+        function registerUser(event) {
+            event.preventDefault();
+            const firstName = document.getElementById('first-name').value;
+            const lastName = document.getElementById('last-name').value;
+            const email = document.getElementById('register-email').value;
+            const password = document.getElementById('register-password').value;
+            const confirmPassword = document.getElementById('confirm-password').value;
+            const phone = document.getElementById('phone').value;
+
+            // Validate registration fields
+            if (password !== confirmPassword) {
+                document.getElementById('register-error').textContent = "Passwords do not match!";
+                document.getElementById('register-error').style.display = 'block';
+                return false;
+            }
+
+            // Mock registration logic
+            if (firstName && lastName && email && password && phone) {
+                alert("Registration successful!");
+                toggleForms(); // Switch to login form
+            } else {
+                document.getElementById('register-error').style.display = 'block';
+            }
+        }
+    </script>
+</body>
+</html>
